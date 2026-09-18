@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Weblino</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+<div class="auth-shell">
+  <div class="auth-card">
+    <h1>Weblino Admin</h1>
+    <p class="subtitle">Sign in to manage your site</p>
+    <div class="err-msg" id="errMsg"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:6px">Sign in</button>
+    </form>
+  </div>
+</div>
+<script src="../js/panel.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errBox = document.getElementById('errMsg');
+  errBox.style.display = 'none';
+  try {
+    const { user } = await api('/auth/login', {
+      method: 'POST',
+      body: { email: document.getElementById('email').value, password: document.getElementById('password').value }
+    });
+    if (user.role !== 'admin') throw new Error('This account is not an admin account.');
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    errBox.textContent = err.message;
+    errBox.style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>

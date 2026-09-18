@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — Weblino</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+<div class="panel-shell">
+  <aside class="sidebar">
+    <div class="brand">Weblino <span>Client</span></div>
+    <button class="nav-item active" data-view="projects">My Projects</button>
+    <button class="nav-item" data-view="profile">My Profile</button>
+    <div class="sidebar-bottom">
+      <div style="font-size:.8rem;color:var(--gray-dim);margin-bottom:8px" id="whoami"></div>
+      <button class="nav-item" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section id="view-projects">
+      <h1>My Projects</h1>
+      <p class="subtitle">Live status of the work Weblino is doing for you.</p>
+      <div class="card">
+        <div id="projectsList"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+
+    <section id="view-profile" style="display:none">
+      <h1>My Profile</h1>
+      <p class="subtitle">Update your contact details or password.</p>
+      <div class="card" style="max-width:440px">
+        <div class="err-msg" id="profileErr"></div>
+        <div class="ok-msg" id="profileOk"></div>
+        <form id="profileForm">
+          <div class="field"><label>Full name</label><input id="pfName"></div>
+          <div class="field"><label>Email (contact support to change)</label><input id="pfEmail" disabled></div>
+          <div class="field"><label>Phone</label><input id="pfPhone"></div>
+          <div class="field"><label>New password (leave blank to keep current)</label><input type="password" id="pfPassword" minlength="6"></div>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../js/panel.js"></script>
+<script>
+(async function init() {
+  const user = await guard('customer', 'login.html');
+  if (!user) return;
+  document.getElementById('whoami').textContent = user.name + ' · ' + user.email;
+  document.getElementById('logoutBtn').addEventListener('click', () => logout('login.html'));
+
+  document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.view));
+  });
+
+  loadProjects();
+  loadProfile();
+
+  document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('profileErr');
+    const okBox = document.getElementById('profileOk');
+    errBox.style.display = 'none'; okBox.style.display = 'none';
+    try {
+      await api('/customer/profile', { method: 'PATCH', body: {
+        name: document.getElementById('pfName').value,
+        phone: document.getElementById('pfPhone').value,
+        password: document.getElementById('pfPassword').value || undefined
+      }});
+      document.getElementById('pfPassword').value = '';
+      okBox.textContent = 'Saved!'; okBox.style.display = 'block';
+    } catch (err) { errBox.textContent = err.message; errBox.style.display = 'block'; }
+  });
+})();
+
+function showView(view) {
+  document.querySelectorAll('[id^="view-"]').forEach(s => s.style.display = 'none');
+  document.getElementById('view-' + view).style.display = 'block';
+  document.querySelectorAll('.nav-item[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+}
+
+async function loadProjects() {
+  try {
+    const { projects } = await api('/customer/projects');
+    document.getElementById('projectsList').innerHTML = projects.length ? projects.map(p => `
+      <div style="padding:16px 0;border-bottom:1px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <h3 style="margin:0;font-family:var(--font-display);font-size:1.05rem">${escapeHtml(p.title)}</h3>
+          <span class="badge ${p.status}">${p.status.replace('_',' ')}</span>
+        </div>
+        ${p.description ? `<p style="color:var(--gray);margin:8px 0 0;font-size:.9rem">${escapeHtml(p.description)}</p>` : ''}
+        ${p.notes ? `<p style="color:var(--accent-2);margin:8px 0 0;font-size:.88rem">Note from Weblino: ${escapeHtml(p.notes)}</p>` : ''}
+        <div style="color:var(--gray-dim);font-size:.8rem;margin-top:8px">
+          ${p.budget ? 'Budget: ' + escapeHtml(p.budget) + ' · ' : ''}Last updated ${fmtDate(p.updated_at)}
+        </div>
+      </div>
+    `).join('') : `<div class="empty">No projects assigned yet. Once Weblino starts work on your site, it'll show up here.</div>`;
+  } catch (e) { console.error(e); }
+}
+
+async function loadProfile() {
+  try {
+    const { user } = await api('/customer/profile');
+    document.getElementById('pfName').value = user.name;
+    document.getElementById('pfEmail').value = user.email;
+    document.getElementById('pfPhone').value = user.phone || '';
+  } catch (e) { console.error(e); }
+}
+</script>
+</body>
+</html>

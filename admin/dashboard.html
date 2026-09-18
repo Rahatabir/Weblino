@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Weblino</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/panel.css">
+</head>
+<body>
+<div class="panel-shell">
+  <aside class="sidebar">
+    <div class="brand">Weblino <span>Admin</span></div>
+    <button class="nav-item active" data-view="overview">Overview</button>
+    <button class="nav-item" data-view="messages">Messages <span id="msgBadge" style="margin-left:auto;color:var(--warn)"></span></button>
+    <button class="nav-item" data-view="customers">Customers</button>
+    <button class="nav-item" data-view="projects">Projects</button>
+    <div class="sidebar-bottom">
+      <div style="font-size:.8rem;color:var(--gray-dim);margin-bottom:8px" id="whoami"></div>
+      <button class="nav-item" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- OVERVIEW -->
+    <section id="view-overview">
+      <h1>Overview</h1>
+      <p class="subtitle">Quick snapshot of everything happening on the site.</p>
+      <div class="stat-grid" id="statGrid">
+        <div class="loading">Loading stats…</div>
+      </div>
+      <div class="card">
+        <h2>Latest messages</h2>
+        <div id="overviewMessages"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section id="view-messages" style="display:none">
+      <h1>Contact Messages</h1>
+      <p class="subtitle">Project inquiries submitted from the homepage form.</p>
+      <div class="card">
+        <div id="messagesTable"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section id="view-customers" style="display:none">
+      <h1>Customers</h1>
+      <p class="subtitle">People with access to the customer panel.</p>
+      <div class="toolbar">
+        <div></div>
+        <button class="btn btn-primary" id="addCustomerBtn">+ Add customer</button>
+      </div>
+      <div class="card">
+        <div id="customersTable"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="view-projects" style="display:none">
+      <h1>Projects</h1>
+      <p class="subtitle">Work assigned to each customer, and its status.</p>
+      <div class="toolbar">
+        <div></div>
+        <button class="btn btn-primary" id="addProjectBtn">+ New project</button>
+      </div>
+      <div class="card">
+        <div id="projectsTable"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Add customer modal -->
+<div class="modal-backdrop" id="customerModal">
+  <div class="modal">
+    <h2>Add customer</h2>
+    <div class="err-msg" id="customerErr"></div>
+    <form id="customerForm">
+      <div class="field"><label>Name</label><input id="cName" required></div>
+      <div class="field"><label>Email</label><input id="cEmail" type="email" required></div>
+      <div class="field"><label>Phone</label><input id="cPhone"></div>
+      <div class="field"><label>Temporary password</label><input id="cPassword" type="text" required></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+        <button type="button" class="btn btn-ghost" id="customerCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add/Edit project modal -->
+<div class="modal-backdrop" id="projectModal">
+  <div class="modal">
+    <h2 id="projectModalTitle">New project</h2>
+    <div class="err-msg" id="projectErr"></div>
+    <form id="projectForm">
+      <input type="hidden" id="pId">
+      <div class="field">
+        <label>Customer</label>
+        <select id="pCustomer" required></select>
+      </div>
+      <div class="field"><label>Title</label><input id="pTitle" required></div>
+      <div class="field"><label>Description</label><textarea id="pDescription" rows="3"></textarea></div>
+      <div class="field"><label>Budget</label><input id="pBudget" placeholder="e.g. $1,200"></div>
+      <div class="field">
+        <label>Status</label>
+        <select id="pStatus">
+          <option value="pending">Pending</option>
+          <option value="in_progress">In progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="field"><label>Internal notes (visible to customer)</label><textarea id="pNotes" rows="2"></textarea></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+        <button type="button" class="btn btn-ghost" id="projectCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/panel.js"></script>
+<script>
+let CUSTOMERS = [];
+
+(async function init() {
+  const user = await guard('admin', 'login.html');
+  if (!user) return;
+  document.getElementById('whoami').textContent = user.name + ' · ' + user.email;
+  document.getElementById('logoutBtn').addEventListener('click', () => logout('login.html'));
+
+  document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.view));
+  });
+
+  loadOverview();
+  loadMessages();
+  loadCustomers();
+  loadProjects();
+  setupModals();
+})();
+
+function showView(view) {
+  document.querySelectorAll('[id^="view-"]').forEach(s => s.style.display = 'none');
+  document.getElementById('view-' + view).style.display = 'block';
+  document.querySelectorAll('.nav-item[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+}
+
+async function loadOverview() {
+  try {
+    const s = await api('/admin/stats');
+    document.getElementById('statGrid').innerHTML = `
+      <div class="stat-card"><div class="num">${s.customers}</div><div class="label">Customers</div></div>
+      <div class="stat-card"><div class="num">${s.messages}</div><div class="label">Total messages</div></div>
+      <div class="stat-card"><div class="num">${s.newMessages}</div><div class="label">New messages</div></div>
+      <div class="stat-card"><div class="num">${s.projects}</div><div class="label">Total projects</div></div>
+      <div class="stat-card"><div class="num">${s.inProgress}</div><div class="label">In progress</div></div>
+      <div class="stat-card"><div class="num">${s.completed}</div><div class="label">Completed</div></div>
+    `;
+    if (s.newMessages > 0) document.getElementById('msgBadge').textContent = '● ' + s.newMessages;
+    const { messages } = await api('/admin/messages');
+    const latest = messages.slice(0, 5);
+    document.getElementById('overviewMessages').innerHTML = latest.length ? `
+      <table><thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>${latest.map(m => `<tr>
+        <td>${escapeHtml(m.name)}</td><td>${escapeHtml(m.email)}</td>
+        <td>${escapeHtml(m.project_type || '—')}</td><td>${fmtDate(m.created_at)}</td>
+        <td><span class="badge ${m.status}">${m.status}</span></td>
+      </tr>`).join('')}</tbody></table>` : `<div class="empty">No messages yet.</div>`;
+  } catch (e) { console.error(e); }
+}
+
+async function loadMessages() {
+  try {
+    const { messages } = await api('/admin/messages');
+    document.getElementById('messagesTable').innerHTML = messages.length ? `
+      <table><thead><tr><th>Name</th><th>Contact</th><th>Type</th><th>Budget</th><th>Message</th><th>Date</th><th>Status</th><th></th></tr></thead>
+      <tbody>${messages.map(m => `<tr>
+        <td>${escapeHtml(m.name)}</td>
+        <td>${escapeHtml(m.email)}${m.phone ? '<br><span style="color:var(--gray)">' + escapeHtml(m.phone) + '</span>' : ''}</td>
+        <td>${escapeHtml(m.project_type || '—')}</td>
+        <td>${escapeHtml(m.budget || '—')}</td>
+        <td style="max-width:260px">${escapeHtml(m.message).slice(0, 140)}${m.message.length > 140 ? '…' : ''}</td>
+        <td>${fmtDate(m.created_at)}</td>
+        <td>
+          <select class="badge-select" onchange="updateMessageStatus(${m.id}, this.value)">
+            <option value="new" ${m.status==='new'?'selected':''}>New</option>
+            <option value="read" ${m.status==='read'?'selected':''}>Read</option>
+            <option value="replied" ${m.status==='replied'?'selected':''}>Replied</option>
+          </select>
+        </td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteMessage(${m.id})">Delete</button></td>
+      </tr>`).join('')}</tbody></table>` : `<div class="empty">No messages yet.</div>`;
+  } catch (e) { console.error(e); }
+}
+
+async function updateMessageStatus(id, status) {
+  await api('/admin/messages/' + id, { method: 'PATCH', body: { status } });
+  loadOverview();
+}
+async function deleteMessage(id) {
+  if (!confirm('Delete this message?')) return;
+  await api('/admin/messages/' + id, { method: 'DELETE' });
+  loadMessages(); loadOverview();
+}
+
+async function loadCustomers() {
+  try {
+    const { users } = await api('/admin/users');
+    CUSTOMERS = users;
+    document.getElementById('customersTable').innerHTML = users.length ? `
+      <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
+      <tbody>${users.map(u => `<tr>
+        <td>${escapeHtml(u.name)}</td><td>${escapeHtml(u.email)}</td>
+        <td>${escapeHtml(u.phone || '—')}</td><td>${fmtDate(u.created_at)}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteCustomer(${u.id})">Delete</button></td>
+      </tr>`).join('')}</tbody></table>` : `<div class="empty">No customers yet.</div>`;
+    document.getElementById('pCustomer').innerHTML = users.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function deleteCustomer(id) {
+  if (!confirm('Delete this customer? Their projects will remain but be orphaned.')) return;
+  await api('/admin/users/' + id, { method: 'DELETE' });
+  loadCustomers(); loadOverview();
+}
+
+async function loadProjects() {
+  try {
+    const { projects } = await api('/admin/projects');
+    document.getElementById('projectsTable').innerHTML = projects.length ? `
+      <table><thead><tr><th>Title</th><th>Customer</th><th>Budget</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+      <tbody>${projects.map(p => `<tr>
+        <td>${escapeHtml(p.title)}</td>
+        <td>${escapeHtml(p.customer_name)}<br><span style="color:var(--gray)">${escapeHtml(p.customer_email)}</span></td>
+        <td>${escapeHtml(p.budget || '—')}</td>
+        <td><span class="badge ${p.status}">${p.status.replace('_',' ')}</span></td>
+        <td>${fmtDate(p.updated_at)}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-ghost btn-sm" onclick='editProject(${JSON.stringify(p)})'>Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProject(${p.id})">Delete</button>
+        </td>
+      </tr>`).join('')}</tbody></table>` : `<div class="empty">No projects yet.</div>`;
+  } catch (e) { console.error(e); }
+}
+
+async function deleteProject(id) {
+  if (!confirm('Delete this project?')) return;
+  await api('/admin/projects/' + id, { method: 'DELETE' });
+  loadProjects(); loadOverview();
+}
+
+function editProject(p) {
+  document.getElementById('projectModalTitle').textContent = 'Edit project';
+  document.getElementById('pId').value = p.id;
+  document.getElementById('pCustomer').value = p.customer_id;
+  document.getElementById('pTitle').value = p.title;
+  document.getElementById('pDescription').value = p.description || '';
+  document.getElementById('pBudget').value = p.budget || '';
+  document.getElementById('pStatus').value = p.status;
+  document.getElementById('pNotes').value = p.notes || '';
+  document.getElementById('projectErr').style.display = 'none';
+  document.getElementById('projectModal').classList.add('open');
+}
+
+function setupModals() {
+  const custModal = document.getElementById('customerModal');
+  document.getElementById('addCustomerBtn').addEventListener('click', () => {
+    document.getElementById('customerForm').reset();
+    document.getElementById('customerErr').style.display = 'none';
+    custModal.classList.add('open');
+  });
+  document.getElementById('customerCancel').addEventListener('click', () => custModal.classList.remove('open'));
+  document.getElementById('customerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('customerErr');
+    try {
+      await api('/admin/users', { method: 'POST', body: {
+        name: document.getElementById('cName').value,
+        email: document.getElementById('cEmail').value,
+        phone: document.getElementById('cPhone').value,
+        password: document.getElementById('cPassword').value
+      }});
+      custModal.classList.remove('open');
+      loadCustomers(); loadOverview();
+    } catch (err) { errBox.textContent = err.message; errBox.style.display = 'block'; }
+  });
+
+  const projModal = document.getElementById('projectModal');
+  document.getElementById('addProjectBtn').addEventListener('click', () => {
+    document.getElementById('projectForm').reset();
+    document.getElementById('pId').value = '';
+    document.getElementById('projectModalTitle').textContent = 'New project';
+    document.getElementById('projectErr').style.display = 'none';
+    projModal.classList.add('open');
+  });
+  document.getElementById('projectCancel').addEventListener('click', () => projModal.classList.remove('open'));
+  document.getElementById('projectForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('projectErr');
+    const id = document.getElementById('pId').value;
+    const body = {
+      customer_id: Number(document.getElementById('pCustomer').value),
+      title: document.getElementById('pTitle').value,
+      description: document.getElementById('pDescription').value,
+      budget: document.getElementById('pBudget').value,
+      status: document.getElementById('pStatus').value,
+      notes: document.getElementById('pNotes').value
+    };
+    try {
+      if (id) await api('/admin/projects/' + id, { method: 'PATCH', body });
+      else await api('/admin/projects', { method: 'POST', body });
+      projModal.classList.remove('open');
+      loadProjects(); loadOverview();
+    } catch (err) { errBox.textContent = err.message; errBox.style.display = 'block'; }
+  });
+
+  [custModal, projModal].forEach(m => m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); }));
+}
+</script>
+</body>
+</html>

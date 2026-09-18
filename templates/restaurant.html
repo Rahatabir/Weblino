@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saffron &amp; Sage — Restaurant Template | Weblino</title>
+<meta name="description" content="Saffron &amp; Sage: a warm restaurant template by Weblino with a filterable digital menu, reservation form and opening hours.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/demo.css">
+<style>
+  :root{
+    --ink:#F3EDE3; --paper:#14100B; --muted:#A2988A; --line:#2A2219; --soft:#1D1710;
+    --accent:#D9A05B; --accent-ink:#241704; --brand:#D9A05B; --brand-ink:#241704;
+    --font-display:'Playfair Display',serif; --font:'Inter',sans-serif; --radius:14px;
+    --head-bg:rgba(16,12,8,.92); --head-ink:#F3EDE3; --head-line:#2A2219;
+    --card-bg:#1B150E; --input-bg:#221A12; --drawer-bg:#1B150E; --drawer-ink:#F3EDE3;
+    --foot-bg:#100C08; --foot-ink:#F3EDE3;
+  }
+  body{ background:var(--paper); color:var(--ink); }
+  h1,h2,h3{ font-family:var(--font-display); }
+  .hero{
+    position:relative; min-height:560px; display:grid; align-items:center;
+    background:radial-gradient(90% 120% at 78% 25%,#48331C 0%,#14100B 62%);
+    border-bottom:1px solid var(--line);
+  }
+  .hero-in{ padding:90px 0; max-width:620px; }
+  .hero h1{ font-size:clamp(2.6rem,6vw,4.1rem); line-height:1.04; margin:16px 0 18px; }
+  .hero h1 i{ color:var(--accent); }
+  .hero p{ color:#C6BBAA; max-width:46ch; }
+  .hero-cta{ display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+  .hero-plate{ position:absolute; right:6%; top:50%; transform:translateY(-50%); width:min(330px,32vw); color:var(--accent); opacity:.85; display:none; }
+  @media(min-width:1000px){ .hero-plate{ display:block; } }
+
+  .hours-bar{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border-block:1px solid var(--line); }
+  .hours-bar div{ background:var(--paper); padding:22px 26px; }
+  .hours-bar h3{ font-family:var(--font); font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+  .hours-bar p{ font-size:.92rem; color:#C6BBAA; margin-top:6px; }
+
+  .chips{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:26px; }
+  .chip{ padding:9px 18px; border-radius:999px; border:1px solid var(--line); background:transparent; color:#C6BBAA; font-size:.86rem; }
+  .chip.is-on{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600; }
+
+  .dish{ display:flex; gap:16px; padding:18px; border:1px solid var(--line); border-radius:14px; background:var(--card-bg); align-items:center; }
+  .dish [data-art]{ width:56px; flex:none; color:var(--accent); }
+  .dish h3{ font-size:1.05rem; }
+  .dish p{ font-size:.84rem; color:var(--muted); margin-top:4px; }
+  .dish .cost{ margin-left:auto; font-family:var(--font-display); font-size:1.1rem; color:var(--accent); white-space:nowrap; }
+  .veg{ font-size:.68rem; border:1px solid var(--accent); color:var(--accent); border-radius:4px; padding:1px 5px; margin-left:8px; vertical-align:middle; }
+
+  .gal{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .gal div{ aspect-ratio:1/1; border-radius:14px; display:grid; place-items:center; color:#E7D6BC; }
+  .gal div:nth-child(1){ background:linear-gradient(140deg,#43301B,#221810); }
+  .gal div:nth-child(2){ background:linear-gradient(140deg,#5A3F22,#2A1D11); }
+  .gal div:nth-child(3){ background:linear-gradient(140deg,#33291B,#1B140D); }
+  .gal div:nth-child(4){ background:linear-gradient(140deg,#6A4A28,#2E2013); }
+  .gal div:nth-child(5){ background:linear-gradient(140deg,#2C2115,#17110B); }
+  .gal div:nth-child(6){ background:linear-gradient(140deg,#4E3721,#251A0F); }
+  .gal div:nth-child(7){ background:linear-gradient(140deg,#3B2D1C,#1E160E); }
+  .gal div:nth-child(8){ background:linear-gradient(140deg,#5F4426,#2B1E12); }
+  .gal svg{ width:48%; opacity:.6; }
+
+  .book{ display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+  .book-card{ background:var(--card-bg); border:1px solid var(--line); border-radius:18px; padding:28px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field input,.field select,.field textarea{ color:var(--ink); }
+
+  .revw{ background:var(--card-bg); border:1px solid var(--line); border-radius:14px; padding:22px; }
+  .revw p{ font-size:.92rem; color:#D6CCBC; }
+  .revw b{ display:block; margin-top:14px; font-size:.86rem; }
+  .revw small{ color:var(--muted); font-size:.76rem; }
+
+  @media(max-width:900px){
+    .hours-bar{ grid-template-columns:1fr; }
+    .book{ grid-template-columns:1fr; }
+    .gal{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="#top"><span class="brand-mark" style="color:#241704">S</span> Saffron &amp; Sage</a>
+    <nav class="nav"><a href="#top" class="is-on">Home</a><a href="#menu">Menu</a><a href="#story">About</a><a href="#gallery">Gallery</a><a href="#book">Reserve</a></nav>
+    <div class="head-tools">
+      <a class="btn btn-solid btn-sm" href="#book" style="background:var(--accent);color:var(--accent-ink)">Book a table</a>
+      <button class="burger" data-burger aria-expanded="false" aria-label="Menu">☰</button>
+    </div>
+  </div>
+  <div class="wrap"><nav class="mobile-nav" data-mobilenav><a href="#menu">Menu</a><a href="#story">About</a><a href="#gallery">Gallery</a><a href="#book">Reserve</a></nav></div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <p class="eyebrow">Authentic kitchen since 1998</p>
+      <h1>Where every dish <i>tells a story.</i></h1>
+      <p>Slow-cooked recipes from three generations, served in a room built for long dinners and longer conversations.</p>
+      <div class="hero-cta">
+        <a href="#book" class="btn btn-solid">Reserve a table</a>
+        <a href="#menu" class="btn btn-line">See the menu</a>
+      </div>
+    </div>
+    <span class="hero-plate" data-art="plate"></span>
+  </section>
+
+  <div class="hours-bar">
+    <div><h3>Opening hours</h3><p>Mon–Thu 12:00 – 23:00 · Fri–Sun 11:00 – 00:00</p></div>
+    <div><h3>Find us</h3><p>24 Lake Road, Gulshan 2, Dhaka 1212</p></div>
+    <div><h3>Reservations</h3><p>+880 1700 000 000 · hello@saffronsage.example</p></div>
+  </div>
+
+  <section class="sec" id="menu">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <div><p class="eyebrow">Our kitchen</p><h2>The menu</h2><p>Seasonal plates, changed four times a year.</p></div>
+      </div>
+      <div class="chips" data-filterbar="#menuList" role="tablist">
+        <button class="chip is-on" data-filter="all" aria-selected="true">All</button>
+        <button class="chip" data-filter="start">Starters</button>
+        <button class="chip" data-filter="main">Mains</button>
+        <button class="chip" data-filter="grill">From the grill</button>
+        <button class="chip" data-filter="dessert">Desserts</button>
+        <button class="chip" data-filter="drink">Drinks</button>
+      </div>
+      <div class="grid g2" id="menuList">
+        <div class="dish rv" data-cat="start"><span data-art="bowl"></span><div><h3>Roasted tomato shorba<span class="veg">veg</span></h3><p>Slow-roasted tomato, charred garlic, basil oil</p></div><span class="cost">Tk 320</span></div>
+        <div class="dish rv" data-cat="start"><span data-art="plate"></span><div><h3>Chili prawn skewers</h3><p>Tiger prawns, smoked chili butter, lime</p></div><span class="cost">Tk 640</span></div>
+        <div class="dish rv" data-cat="main"><span data-art="bowl"></span><div><h3>Kacchi biryani</h3><p>Aged basmati, mutton shoulder, saffron, slow-sealed</p></div><span class="cost">Tk 780</span></div>
+        <div class="dish rv" data-cat="main"><span data-art="plate"></span><div><h3>Sage butter pasta<span class="veg">veg</span></h3><p>Hand-rolled tagliatelle, brown butter, crisp sage</p></div><span class="cost">Tk 690</span></div>
+        <div class="dish rv" data-cat="grill"><span data-art="burger"></span><div><h3>Smash beef burger</h3><p>Double patty, aged cheddar, house pickles, brioche</p></div><span class="cost">Tk 560</span></div>
+        <div class="dish rv" data-cat="grill"><span data-art="plate"></span><div><h3>Charcoal chicken</h3><p>Overnight marinade, burnt lemon, garlic yoghurt</p></div><span class="cost">Tk 720</span></div>
+        <div class="dish rv" data-cat="dessert"><span data-art="cake"></span><div><h3>Pistachio basque cheesecake</h3><p>Burnt top, soft centre, sea salt</p></div><span class="cost">Tk 380</span></div>
+        <div class="dish rv" data-cat="dessert"><span data-art="cake"></span><div><h3>Date &amp; jaggery pudding</h3><p>Warm toffee sauce, vanilla cream</p></div><span class="cost">Tk 340</span></div>
+        <div class="dish rv" data-cat="drink"><span data-art="coffee"></span><div><h3>Cardamom flat white</h3><p>House espresso blend, green cardamom</p></div><span class="cost">Tk 260</span></div>
+        <div class="dish rv" data-cat="drink"><span data-art="coffee"></span><div><h3>Saffron lassi<span class="veg">veg</span></h3><p>Cultured yoghurt, saffron threads, pistachio</p></div><span class="cost">Tk 240</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-sm" id="story">
+    <div class="wrap grid g2" style="align-items:center;gap:40px">
+      <div class="rv">
+        <p class="eyebrow">Our story</p>
+        <h2 style="margin:10px 0 14px">Three generations, one kitchen</h2>
+        <p class="lead" style="color:#C6BBAA">It started as a six-table room on Lake Road in 1998. The recipes haven't changed much since — we still grind our own spice mix every morning and cook the biryani sealed in dough, the way our grandmother did.</p>
+        <div class="grid g3" style="margin-top:26px;gap:16px">
+          <div><strong style="font-family:var(--font-display);font-size:1.8rem;color:var(--accent)" data-count="28" data-suffix="">0</strong><p style="font-size:.82rem;color:var(--muted)">Years open</p></div>
+          <div><strong style="font-family:var(--font-display);font-size:1.8rem;color:var(--accent)" data-count="46" data-suffix="">0</strong><p style="font-size:.82rem;color:var(--muted)">Dishes on the menu</p></div>
+          <div><strong style="font-family:var(--font-display);font-size:1.8rem;color:var(--accent)" data-count="4.8" data-suffix="">0</strong><p style="font-size:.82rem;color:var(--muted)">Average rating</p></div>
+        </div>
+      </div>
+      <div class="rv" id="gallery">
+        <div class="gal">
+          <div data-art="plate"></div><div data-art="bowl"></div><div data-art="burger"></div><div data-art="coffee"></div>
+          <div data-art="cake"></div><div data-art="plate"></div><div data-art="bowl"></div><div data-art="coffee"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="book">
+    <div class="wrap book">
+      <div class="rv">
+        <p class="eyebrow">Reservations</p>
+        <h2 style="margin:10px 0 14px">Book your table</h2>
+        <p class="lead" style="color:#C6BBAA">Tables are held for 15 minutes. For groups of eight or more, call us and we'll set the long table at the back.</p>
+        <div class="grid g2" style="margin-top:26px">
+          <div class="revw"><p>"The kacchi is the closest thing to a home kitchen I've found in the city."</p><b>Nusrat J.</b><small>Regular since 2019</small></div>
+          <div class="revw"><p>"Booked for eight, got the corner table and a birthday dessert we didn't ask for."</p><b>Arif H.</b><small>Google review</small></div>
+        </div>
+      </div>
+      <form class="book-card rv" data-demoform="Reservation received — demo only">
+        <div class="row2">
+          <div class="field"><label for="rname">Full name</label><input id="rname" required placeholder="Your name"></div>
+          <div class="field"><label for="rphone">Phone</label><input id="rphone" required placeholder="+880 1XXX XXXXXX"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="rdate">Date</label><input id="rdate" type="date" required></div>
+          <div class="field"><label for="rtime">Time</label>
+            <select id="rtime" required><option value="">Select</option><option>12:30</option><option>13:30</option><option>19:00</option><option>20:00</option><option>21:30</option></select>
+          </div>
+        </div>
+        <div class="field"><label for="rguests">Guests</label>
+          <select id="rguests" required><option value="">Select</option><option>2 people</option><option>4 people</option><option>6 people</option><option>8+ people</option></select>
+        </div>
+        <div class="field"><label for="rnote">Anything we should know?</label><textarea id="rnote" rows="3" placeholder="Allergies, celebrations, seating preference"></textarea></div>
+        <button class="btn btn-solid btn-block" type="submit">Confirm reservation</button>
+        <div class="form-ok">Table requested. We'll call to confirm. (Demo only — nothing was stored.)</div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:12px"><span class="brand-mark" style="color:#241704">S</span> Saffron &amp; Sage</div>
+        <p style="opacity:.7;font-size:.86rem;max-width:34ch">24 Lake Road, Gulshan 2, Dhaka. Open daily from noon.</p>
+      </div>
+      <div><h4>Visit</h4><ul><li><a href="#book">Reservations</a></li><li><a href="#menu">Menu</a></li><li><a href="#">Private dining</a></li><li><a href="#">Catering</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li>+880 1700 000 000</li><li>hello@saffronsage.example</li><li><a href="#">Directions</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">Facebook</a></li><li><a href="#">TripAdvisor</a></li></ul></div>
+    </div>
+    <div class="foot-bot"><span>© 2026 Saffron &amp; Sage. Demo content.</span><span>Built by Weblino</span></div>
+  </div>
+</footer>
+
+<div class="wb-bar">
+  <div class="wb-inner">
+    <span class="wb-dot"></span>
+    <p class="wb-text"><b>Weblino template — Restaurant.</b> Menu, photos and reservation flow are yours to customize.</p>
+    <div class="wb-actions">
+      <a href="../index.html#templates">All templates</a>
+      <a class="primary" href="../index.html#contact">Request this design</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/demo.js"></script>
+<script>WB.init();</script>
+</body>
+</html>

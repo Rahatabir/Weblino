@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rahat Abir — Personal Brand Template | Weblino</title>
+<meta name="description" content="A focused single-page personal brand template by Weblino: bio, selected work, services, writing and contact.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/demo.css">
+<style>
+  :root{
+    --ink:#F4F3F7; --paper:#0D0C11; --muted:#9A97A6; --line:#211F2A; --soft:#161520;
+    --accent:#EFC44E; --accent-ink:#1A1405; --brand:#EFC44E; --brand-ink:#1A1405;
+    --font-display:'Space Grotesk',sans-serif; --font:'Inter',sans-serif; --radius:14px;
+    --head-bg:rgba(13,12,17,.9); --head-ink:#F4F3F7; --head-line:#211F2A;
+    --card-bg:#151420; --input-bg:#16151F; --foot-bg:#0A090E;
+  }
+  body{ background:var(--paper); color:var(--ink); }
+  h1,h2,h3{ font-family:var(--font-display); }
+  .hero{ padding:96px 0 70px; position:relative; overflow:hidden; }
+  .hero::before{ content:''; position:absolute; right:-10%; top:-30%; width:60%; aspect-ratio:1; border-radius:50%;
+    background:radial-gradient(circle,rgba(239,196,78,.16),transparent 68%); }
+  .hero-in{ display:grid; grid-template-columns:1.15fr .85fr; gap:44px; align-items:center; position:relative; }
+  .hero h1{ font-size:clamp(2.5rem,5.4vw,3.8rem); line-height:1.05; margin:16px 0 18px; }
+  .hero p{ color:var(--muted); max-width:46ch; }
+  .hero-cta{ display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
+  .avatar{ position:relative; display:grid; place-items:center; }
+  .avatar .ring{ width:min(320px,80%); aspect-ratio:1; border-radius:50%; background:linear-gradient(150deg,#EFC44E,#8E6C1F); display:grid; place-items:center; color:#0D0C11; }
+  .avatar .ring svg{ width:66%; }
+  .avatar .chip{ position:absolute; background:var(--card-bg); border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:.78rem; }
+  .c1{ top:8%; left:0; } .c2{ bottom:14%; right:2%; } .c3{ bottom:2%; left:12%; }
+
+  .now{ display:flex; gap:10px; align-items:center; font-size:.85rem; color:var(--muted); margin-top:30px; }
+  .now i{ width:8px; height:8px; border-radius:50%; background:#4ADE80; display:inline-block; }
+
+  .work{ background:var(--card-bg); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .35s var(--ease), border-color .35s; }
+  .work:hover{ transform:translateY(-5px); border-color:#3A3550; }
+  .work .cover{ aspect-ratio:16/10; display:grid; place-items:center; color:var(--accent); }
+  .w1 .cover{ background:linear-gradient(140deg,#241F33,#15121F); }
+  .w2 .cover{ background:linear-gradient(140deg,#1B2A33,#12191F); }
+  .w3 .cover{ background:linear-gradient(140deg,#2B2419,#1A1610); }
+  .work .cover svg{ width:44%; }
+  .work .body{ padding:18px 20px 22px; }
+  .work h3{ font-size:1.05rem; }
+  .work p{ font-size:.85rem; color:var(--muted); margin-top:4px; }
+  .tags{ display:flex; gap:6px; margin-top:12px; flex-wrap:wrap; }
+  .tags span{ font-size:.7rem; border:1px solid var(--line); border-radius:999px; padding:3px 9px; color:var(--muted); }
+
+  .svc-row{ display:flex; gap:20px; padding:22px 0; border-bottom:1px solid var(--line); align-items:baseline; }
+  .svc-row h3{ font-size:1.15rem; min-width:220px; }
+  .svc-row p{ font-size:.9rem; color:var(--muted); flex:1; }
+  .svc-row b{ font-family:var(--font-display); color:var(--accent); white-space:nowrap; }
+
+  .post{ border-left:2px solid var(--line); padding:4px 0 4px 20px; }
+  .post:hover{ border-color:var(--accent); }
+  .post span{ font-size:.75rem; color:var(--muted); }
+  .post h3{ font-size:1rem; margin:4px 0 6px; }
+  .post p{ font-size:.86rem; color:var(--muted); }
+
+  .contact{ background:linear-gradient(130deg,#191627,#0F0E15); border:1px solid var(--line); border-radius:20px; padding:38px; display:grid; grid-template-columns:1fr 1fr; gap:34px; }
+  .field input,.field textarea{ color:var(--ink); }
+  .socials{ display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
+  .socials a{ border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:.82rem; color:var(--muted); }
+  .socials a:hover{ border-color:var(--accent); color:var(--ink); }
+
+  @media(max-width:900px){
+    .hero-in,.contact{ grid-template-columns:1fr; }
+    .avatar{ order:-1; }
+    .svc-row{ flex-direction:column; gap:6px; }
+    .svc-row h3{ min-width:0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="#top"><span class="brand-mark" style="color:#1A1405">R</span> Rahat Abir</a>
+    <nav class="nav"><a href="#work" class="is-on">Work</a><a href="#services">Services</a><a href="#writing">Writing</a><a href="#contact">Contact</a></nav>
+    <div class="head-tools">
+      <a class="btn btn-solid btn-sm" href="#contact">Work with me</a>
+      <button class="burger" data-burger aria-expanded="false" aria-label="Menu">☰</button>
+    </div>
+  </div>
+  <div class="wrap"><nav class="mobile-nav" data-mobilenav><a href="#work">Work</a><a href="#services">Services</a><a href="#writing">Writing</a><a href="#contact">Contact</a></nav></div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <div>
+        <p class="eyebrow">Product designer &amp; front-end developer</p>
+        <h1>I design calm digital products.</h1>
+        <p>Nine years turning complicated workflows into interfaces people can use without a manual. Currently freelance, working with fintech and logistics teams across Dhaka and Singapore.</p>
+        <div class="hero-cta">
+          <a href="#work" class="btn btn-solid">See selected work</a>
+          <a href="#contact" class="btn btn-line">Start a project</a>
+        </div>
+        <p class="now"><i></i> Available for two projects from November</p>
+      </div>
+      <div class="avatar">
+        <div class="ring"><span data-art="person"></span></div>
+        <span class="chip c1">9 yrs experience</span>
+        <span class="chip c2">Figma · React</span>
+        <span class="chip c3">42 projects shipped</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-sm" id="work">
+    <div class="wrap">
+      <div class="sec-head rv"><div><p class="eyebrow">Portfolio</p><h2>Selected work</h2><p>Three recent projects, 2024–2026.</p></div><span style="font-size:.85rem;color:var(--muted)">More on request</span></div>
+      <div class="grid g3">
+        <article class="work w1 rv"><div class="cover"><span data-art="chart"></span></div>
+          <div class="body"><h3>Fintech dashboard</h3><p>Rebuilt a lending back-office used by 300 agents. Cut task time by a third.</p>
+          <div class="tags"><span>Product design</span><span>Design system</span><span>2025</span></div></div></article>
+        <article class="work w2 rv"><div class="cover"><span data-art="screen"></span></div>
+          <div class="body"><h3>Travel booking app</h3><p>End-to-end design for an iOS and Android booking flow, from research to handoff.</p>
+          <div class="tags"><span>Mobile</span><span>Research</span><span>2024</span></div></div></article>
+        <article class="work w3 rv"><div class="cover"><span data-art="spark"></span></div>
+          <div class="body"><h3>Brand site redesign</h3><p>A marketing site rebuild that doubled qualified enquiries in the first quarter.</p>
+          <div class="tags"><span>Web design</span><span>Front-end</span><span>2024</span></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-sm" id="services">
+    <div class="wrap">
+      <div class="sec-head rv"><div><p class="eyebrow">How I can help</p><h2>Ways to work together</h2></div></div>
+      <div class="rv">
+        <div class="svc-row"><h3>Product design sprint</h3><p>Two weeks to go from a vague idea to a clickable prototype your team can test with real users.</p><b>from $4,500</b></div>
+        <div class="svc-row"><h3>Design system build</h3><p>Components, tokens and documentation in Figma, handed over with a React implementation.</p><b>from $7,000</b></div>
+        <div class="svc-row"><h3>Front-end implementation</h3><p>Turning approved designs into responsive, accessible code — React, TypeScript, plain HTML/CSS.</p><b>from $3,800</b></div>
+        <div class="svc-row" style="border-bottom:none"><h3>Advisory retainer</h3><p>A standing half-day a week for design reviews, hiring help and roadmap input.</p><b>$1,600 / month</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-sm" id="writing">
+    <div class="wrap">
+      <div class="sec-head rv"><div><p class="eyebrow">Writing</p><h2>Notes on design and practice</h2></div></div>
+      <div class="grid g3">
+        <a class="post rv" href="#"><span>March 2026 · 6 min</span><h3>Designing for slow connections</h3><p>What changes when your median user is on 3G and a five-year-old Android.</p></a>
+        <a class="post rv" href="#"><span>January 2026 · 9 min</span><h3>The handoff is the product</h3><p>Why I spend as long on documentation as on the screens themselves.</p></a>
+        <a class="post rv" href="#"><span>November 2025 · 4 min</span><h3>Pricing freelance design work</h3><p>Moving from hourly to scoped fees, and what it did to my calendar.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="contact">
+    <div class="wrap">
+      <div class="contact rv">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 style="margin:10px 0 14px;font-size:2rem">Tell me about the project</h2>
+          <p class="lead">The more context you send, the better my first reply will be. I answer every enquiry, usually within a day.</p>
+          <div class="socials">
+            <a href="#">LinkedIn</a><a href="#">GitHub</a><a href="#">Dribbble</a><a href="#">hello@rahatabir.example</a>
+          </div>
+        </div>
+        <form data-demoform="Message sent — demo only">
+          <div class="field"><label for="pname">Name</label><input id="pname" required placeholder="Your name"></div>
+          <div class="field"><label for="pmail">Email</label><input id="pmail" type="email" required placeholder="you@email.com"></div>
+          <div class="field"><label for="pmsg">Project details</label><textarea id="pmsg" rows="4" required placeholder="What are you building, and when do you need it?"></textarea></div>
+          <button class="btn btn-solid btn-block" type="submit">Send message</button>
+          <div class="form-ok">Message sent. I'll get back to you shortly. (Demo only.)</div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-bot" style="border:none;margin:0;padding:0">
+      <span>© 2026 Rahat Abir. Demo content.</span><span>Built by Weblino</span>
+    </div>
+  </div>
+</footer>
+
+<div class="wb-bar">
+  <div class="wb-inner">
+    <span class="wb-dot"></span>
+    <p class="wb-text"><b>Weblino template — Personal Brand.</b> Swap in your bio, projects, rates and links.</p>
+    <div class="wb-actions">
+      <a href="../index.html#templates">All templates</a>
+      <a class="primary" href="../index.html#contact">Request this design</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/demo.js"></script>
+<script>WB.init();</script>
+</body>
+</html>
